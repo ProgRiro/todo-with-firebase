@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import { db } from "./firebase";
 
-function App() {
+const App: React.FC = () => {
+  console.log(db);
+  const [tasks, setTasks] = useState([{ id: "", title: "" }]);
+  useEffect(() => {
+    // db.collection.onSnapshot で firebase 側の変更を監視する
+    // 監視しているため、画面を更新しなくても自動で表示が書き換わる
+    const unSub = db.collection("tasks").onSnapshot((snapshot) => {
+      console.log(snapshot.docs);
+      setTasks(
+        snapshot.docs.map((doc) => ({ id: doc.id, title: doc.data().title }))
+      );
+    });
+    // 監視をするための関数が戻り値で返ってきている
+    return () => unSub();
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {tasks.map((task) => (
+        <h3 key={task.id}>{task.title}</h3>
+      ))}
     </div>
   );
-}
+};
 
 export default App;
