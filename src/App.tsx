@@ -1,7 +1,7 @@
 import { FormControl, TextField, List } from "@material-ui/core";
 import AddToPhotosIcon from "@material-ui/icons/AddToPhotos";
 import React, { useState, useEffect } from "react";
-import "./App.css";
+import styles from "./App.module.css";
 import TaskItem from "./components/TaskItem";
 import { db } from "./firebase";
 
@@ -24,7 +24,7 @@ const App: React.FC = () => {
     setInput("");
   };
   return (
-    <div className="App">
+    <div className={styles.app__root}>
       <h1>React Todo App with Firebase</h1>
       <FormControl>
         <TextField
@@ -38,7 +38,7 @@ const App: React.FC = () => {
           }
         />
       </FormControl>
-      <button disabled={!input} onClick={newTask}>
+      <button className={styles.app__icon} disabled={!input} onClick={newTask}>
         <AddToPhotosIcon />
       </button>
 
