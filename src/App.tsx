@@ -6,6 +6,9 @@ import TaskItem from "./components/TaskItem";
 import { db } from "./firebase";
 import { makeStyles } from "@material-ui/styles";
 
+import { auth } from "./firebase";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
 const useStyles = makeStyles({
   field: {
     marginTop: 30,
@@ -17,10 +20,17 @@ const useStyles = makeStyles({
   },
 });
 
-const App: React.FC = () => {
+const App: React.FC = (props: any) => {
   const [tasks, setTasks] = useState([{ id: "", title: "" }]);
   const [input, setInput] = useState("");
   const classes = useStyles();
+
+  useEffect(() => {
+    const unSub = auth.onAuthStateChanged((user) => {
+      !user && props.history.push("/login");
+    });
+    return () => unSub();
+  });
 
   useEffect(() => {
     // db.collection.onSnapshot で firebase 側の変更を監視する
@@ -42,6 +52,19 @@ const App: React.FC = () => {
   return (
     <div className={styles.app__root}>
       <h1>React Todo App with Firebase</h1>
+      <button
+        className={styles.app__logout}
+        onClick={async () => {
+          try {
+            await auth.signOut();
+            props.history.push("/login");
+          } catch (error) {
+            alert(error.message);
+          }
+        }}
+      >
+        <ExitToAppIcon />
+      </button>
       <br />
       <FormControl>
         <TextField
